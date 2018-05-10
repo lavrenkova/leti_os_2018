@@ -6,6 +6,13 @@ start_mem:
 	KEEP_IP dw 0
 	Counter dw 0
 	Message db 'Interrupt was called        times$'
+	
+	KEEP_AX dw 0
+	KEEP_SS dw 0
+	KEEP_SP dw 0
+	
+	MY_STACK dw 20 DUP(?)
+	end_of_my_stack:
 
 push_reg macro
 	push 	ax
@@ -75,6 +82,14 @@ my_int proc far
 	jmp 	body
 	Int_Tag dw 1234h
 body:
+	mov     CS:KEEP_AX, AX														
+	mov     CS:KEEP_SS, SS														
+	mov     CS:KEEP_SP, SP														
+																				
+	mov     AX, SEG MY_STACK													
+	mov     SS, AX																
+	mov     SP, offset end_of_my_stack											
+	
 	push_reg
 	push 	si
 	push 	ds
@@ -122,8 +137,17 @@ body:
 	pop 	ds
 	pop 	si
 	pop_reg
+	
+	
+	mov     ax, CS:KEEP_SS														
+	mov     ss, ax																
+	mov     SP, CS:KEEP_SP															
+																				
 	mov 	al, 20h
 	out 	20h, al
+	
+	mov     ax, CS:KEEP_AX	
+	
 	iret
 my_int endp
 
@@ -159,12 +183,12 @@ set_new_int proc near
 set_new_int endp
 
 load_my_int proc near	
-	mov 	dx, seg code	
-	;add 	dx, (end_mem-start_mem)
-	add		dx, (start_mem-end_mem)
+	mov     dx, offset end_mem
 	mov 	cl, 4
 	shr 	dx, cl ;div 16
 	inc 	dx
+	add     dx, CODE
+	sub     dx, PSP
 	mov 	ah, 31h
 	int 	21h
 	ret
@@ -297,5 +321,3 @@ Tstack ends
 
 
 end main
-
-

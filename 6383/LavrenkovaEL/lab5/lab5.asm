@@ -16,8 +16,22 @@ start_mem:
     Scancode_8 db 9
     Scancode_9 db 10
     Scancode_0 db 11
+	
+	KEEP_AX dw 0
+	KEEP_SS dw 0
+	KEEP_SP dw 0
+	MY_STACK dw 100 DUP(?)
+	end_of_my_stack:
 
 push_main macro
+	mov     CS:KEEP_AX, AX														
+	mov     CS:KEEP_SS, SS														
+	mov     CS:KEEP_SP, SP														
+																				
+	mov     AX, SEG MY_STACK													
+	mov     SS, AX																
+	mov     SP, offset end_of_my_stack											
+
 	push 	ax
 	push 	bx
 	push 	cx
@@ -29,6 +43,12 @@ pop_main macro
 	pop 	cx
 	pop 	bx
 	pop 	ax
+	
+	mov     ax, CS:KEEP_SS														
+	mov     ss, ax																
+	mov     SP, CS:KEEP_SP																																					
+	mov     ax, CS:KEEP_AX	
+
 endm
 
 my_int proc far

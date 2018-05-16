@@ -11,8 +11,8 @@
     Adress 		db 'Overlay segment address: $'
     Error1 		db 'Error! File not found.$'
     Error2 		db 'Error! Path not found.$'
-    file_ov1 	db 'ovr1.com',0
-    file_ov2 	db 'ovr2.com',0
+    file_ov1 	db 'ovr1.ovl',0
+    file_ov2 	db 'ovr2.ovl',0
     NewLine 	db 13, 10, '$'   
   data ends
   

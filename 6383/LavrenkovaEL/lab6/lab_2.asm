@@ -188,7 +188,8 @@ BEGIN:
 		   mov ah, 10h
 		   int 16h
 ; Выход в DOS
-           xor     AL,AL
+		   mov AH, 01h
+		   int 21h
            mov     AH,4Ch
            int     21H
 		   
